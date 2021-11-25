@@ -34,4 +34,20 @@ router.get("/posts", async (req, res, next) => {
     }
   });
 
+//  router.get('/posts/:id', function(req, res){
+//     post.findOne({_id : parseInt(req.params.id)}, function(err, result){
+//     res.render('detail.ejs', { data : result});  
+//   })
+// })
+
+
+  router.get("/posts/:postId", async (req, res) => {
+    const { postId } = req.params;
+    const post = await Posts.findOne({ postId: postId });
+
+    res.render('detail.ejs', { data: post });
+});
+
+router.get("/posts/:")
+
 module.exports = router;

@@ -2,9 +2,11 @@ const express = require('express')
 const app = express()
 const port = 5000
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose');
+
+const comments = require('./routers/comments')
 const users = require('./routers/users')
 const posts = require('./routers/posts')
-const mongoose = require('mongoose');
 // const connect = require('./schemas')
 // connect();
 
@@ -20,6 +22,7 @@ app.use(express.json())
 app.use(express.static('public'));
 app.use('/api', users)
 app.use('/api', posts)
+app.use('/api', comments)
 
 // ejs 
 app.set('views', __dirname + '/views');

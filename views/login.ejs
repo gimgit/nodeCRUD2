@@ -28,6 +28,7 @@
             data: {nickname, password},
             success: function (response) {
                 localStorage.setItem("token", response.token)
+                localStorage.setItem("nickname", response.nickname)
                 location.href = "/"
             },
             error: function (error) {

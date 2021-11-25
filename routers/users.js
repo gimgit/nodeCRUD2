@@ -68,7 +68,7 @@ router.post('/auth', async (req, res) => {
     const token = jwt.sign(
       { userId: user.userId }, 'CSK');
     res.send({
-      token,
+      token: token, nickname : user.nickname
     });
 });
 
@@ -82,7 +82,7 @@ router.get('/users/me', authMiddleware, async (req, res) => {
 
   res.status(200).send({    //status 200 빠지면 토큰 전달 안되는듯.
       user: { // 가지고 있는 정보들 중에서 중요한 정보 빼고 클라이언트에게 전송한다.
-      nickname : user.nickname
+      nickname : user.nickname,
       }
   }); 
 });
