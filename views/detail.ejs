@@ -30,7 +30,6 @@
             location.href = "/login"
         }
     }
-    let userId;
     $(document).ready(function () {
         // 비회원, 회원 전부 볼 수 있어야하기 때문에 에러가 발생하지 않아야한다.
         if (localStorage.getItem("token")) {
@@ -39,8 +38,9 @@
                 $(`#btnModify${userId}`).show()
             })
         }
-        // getComments()
-        getPosts()
+        $('#submitbtn').show();
+        $('#commentmodifybtn').hide();
+        getComments()
     });
 
     // 해당 게시글의 모든 Comments를 조회
@@ -96,7 +96,7 @@
     //       },
     //     });
     //   }
-    function getPosts() {
+    function getComments() {
         const postId = location.pathname.split("/")[3]
         const token = localStorage.getItem("token");
         
@@ -129,7 +129,7 @@
           temp_html = `
             <li>
               ${name} 님이 "${com}"
-              <button onclick="getComment()">modify!</button>
+              <button onclick="findComment('${comId}')">modify!</button>
               <button onclick="deleteComment('${comId}')">delete</button>
             </li>`;
         } else {
@@ -164,14 +164,16 @@
       }
 
       //댓글 특정
-      function getComment(comId) {
+      function findComment(comId) {
         $.ajax({
           type: "GET",
-          url: `/api/comments/comment/${comId}`,
+          url: `/api/findComment/${comId}`,
+          headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`
+                },
           data: {},
-        //   headers: { authorization : `Bearer ${localStorage.getItem("token")}` },
-          headers: { authorization: `Bearer ${localStorage.getItem("token")}`,},
           success: function(response) {
+            
             if (response['errorMessage']) {
               alert(response['errorMessage']);
               return;
@@ -181,6 +183,7 @@
             $('#submitbtn').hide();
             $('#commentmodifybtn').show();
             $('#commentid_p').text(comId);
+            console.log('특정성공')
           }
         })
         
@@ -188,7 +191,7 @@
 
     //댓글 수정
     function modifyComment(comId) {
-        const comment = $(`#commentInput${comId}`).val()
+        const comment = $(`#commentinput${comId}`).val()
         if (!comment) {
             alert("댓글 내용이 존재하지 않습니다.")
             return;
@@ -196,7 +199,7 @@
 
         $.ajax({
             type: "PATCH",
-            url: `/api/comments/comment/${comId}`,
+            url: `/api/patchComment/${comId}`,
             headers: {
                 authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -219,11 +222,11 @@
         if (confirm("댓글을 삭제하시겠습니까?")) {
             $.ajax({
                 type: "DELETE",
-                url: `/api/comments/${postId}`,
+                url: `/api/comments/${comId}`,
                 headers: {
                     authorization: `Bearer ${localStorage.getItem("token")}`
                 },
-                data: {comId : comId},
+                data: {},
                 success: function(response) {
                     if (response['errorMessage']) {
                         alert(response['errorMessage']);
@@ -273,7 +276,7 @@
     // 댓글 작성
     
     function writeComment() {
-        const comment = $('#comment').val()
+        const comment = $('#commentinput').val()
         const postId = location.pathname.split("/")[3]
 
 
@@ -334,7 +337,7 @@
 <div>
   
     <div class="content-box">
-      <h1 style="display: none;">Post no <%= postId %> </h1>
+      <h1 style="display: none;">Detail with post no <%= data.postId %> </h1>
       <h3>제목 :  <%= data.title %> </h3>
         <div class="content-info">
             <h6>작성일 :  <%= data.date.split('GMT',1) %> </h6>
@@ -347,10 +350,20 @@
       <hr>
        <p>본문 : <%= data.content %></p>   
     </div>
+    <hr>
+    <div>
+
     <p id="commentid_p" style="display: none;"></p>
     <ul id="comments">
-    
-    <div>
+    </div>
+      <div id="makecomment">
+        <div onclick="loginCheck()"><input type="text" id="commentinput" > </div>
+        <!-- <button id="submitbtn" onclick="put_comment()">Submit</button> -->
+        <button id="submitbtn" onclick="writeComment()">Submit</button>
+        <button id="commentmodifybtn" onclick="modify_comment()">Modify</button>
+      </div>
+      
+    <!-- <div>
         <div class="input-group mb-3" id="commentWriteBody">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">Comment</span>
@@ -359,7 +372,7 @@
             <button type="button" class="btn btn-primary" onclick="writeComment()">작성</button>
 
         </div>
-    </div>
+    </div> -->
 </div>
 
 

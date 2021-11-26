@@ -27,6 +27,7 @@ router.get("/posts", async (req, res, next) => {
         const posts = await Posts.find({ }).sort("-postId");  // find from query. sort as goodsId
     
         res.json({ posts: posts });  // jsonify
+        // console.log(posts)
     } catch (err) {
         console.error(err);
     
