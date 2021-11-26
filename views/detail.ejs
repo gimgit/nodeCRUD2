@@ -22,8 +22,8 @@
 
 <style>
 
-</style><script>
-
+</style>
+<script>
     function loginCheck() {
         if (!localStorage.getItem("token")) {
             alert("로그인이 필요한 기능입니다.")
@@ -39,7 +39,8 @@
                 $(`#btnModify${userId}`).show()
             })
         }
-        getComments()
+        // getComments()
+        getPosts()
     });
 
     // 해당 게시글의 모든 Comments를 조회
@@ -95,7 +96,7 @@
     //       },
     //     });
     //   }
-    function getComments() {
+    function getPosts() {
         const postId = location.pathname.split("/")[3]
         const token = localStorage.getItem("token");
         
@@ -104,8 +105,9 @@
         $.ajax({
           type: "GET",
           url: `/api/comments/${postId}`,
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}`,},
           data: {},
-          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+        //   headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
           success: function(response) {
             const comments = response['comments']
             for (let i = comments.length - 1; i >= 0; i --) {
@@ -115,18 +117,20 @@
         })
       }
       function makeComments(comment) {
+        
         const comId = comment.comId;
         const name = comment.name;
         const com = comment.comment;
         const user1 = comment.name
+        console.log(comId)
 
         let temp_html;
         if (user1 == localStorage.getItem('nickname')) {
           temp_html = `
             <li>
               ${name} 님이 "${com}"
-              <button onclick="modifyComment('${comId}')">modify</button>
-              <button onclick="delete_comment('${comId}')">delete</button>
+              <button onclick="getComment()">modify!</button>
+              <button onclick="deleteComment('${comId}')">delete</button>
             </li>`;
         } else {
           temp_html = `
@@ -134,16 +138,21 @@
               ${name} 님이 "${com}"
             </li>`;
         }
-      
-    function modifyCommentShow(commentId) {
-        $(`#comment${commentId}`).hide()
-        $(`#commentIcon${commentId}`).hide()
 
-        $(`#commentDiv${commentId}`).show()
+        // <button onclick="deleteComment('${comId}')">delete</button>
+        // <button onclick="getComment('${comId}')">modify</button>
 
-        const commentText = $(`#comment${commentId}`).text().trim();
-        $(`#commentInput${commentId}`).val(commentText)
-    }
+
+    //댓글수정 숨기기?
+    // function modifyCommentShow(commentId) {
+    //     $(`#comment${commentId}`).hide()
+    //     $(`#commentIcon${commentId}`).hide()
+
+    //     $(`#commentDiv${commentId}`).show()
+
+    //     const commentText = $(`#comment${commentId}`).text().trim();
+    //     $(`#commentInput${commentId}`).val(commentText)
+    // }
 
     function modifyCommentHide(commentId) {
         $(`#comment${commentId}`).show()
@@ -154,9 +163,32 @@
     $('#comments').append(temp_html);
       }
 
+      //댓글 특정
+      function getComment(comId) {
+        $.ajax({
+          type: "GET",
+          url: `/api/comments/comment/${comId}`,
+          data: {},
+        //   headers: { authorization : `Bearer ${localStorage.getItem("token")}` },
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}`,},
+          success: function(response) {
+            if (response['errorMessage']) {
+              alert(response['errorMessage']);
+              return;
+            }
+            const comment = response['comments'];
+            $('#commentinput').val(comment['comment']);
+            $('#submitbtn').hide();
+            $('#commentmodifybtn').show();
+            $('#commentid_p').text(comId);
+          }
+        })
+        
+      }
+
     //댓글 수정
-    function modifyComment(commentId) {
-        const comment = $(`#commentInput${commentId}`).val()
+    function modifyComment(comId) {
+        const comment = $(`#commentInput${comId}`).val()
         if (!comment) {
             alert("댓글 내용이 존재하지 않습니다.")
             return;
@@ -164,7 +196,7 @@
 
         $.ajax({
             type: "PATCH",
-            url: `/api/comments/${comId}`,
+            url: `/api/comments/comment/${comId}`,
             headers: {
                 authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -182,64 +214,64 @@
     }
 
     // 댓글 삭제
-    function deleteComment(commentId) {
+    function deleteComment(comId) {
+      console.log(comId + '!')
         if (confirm("댓글을 삭제하시겠습니까?")) {
             $.ajax({
                 type: "DELETE",
-                url: `/api/comments/${commentId}`,
+                url: `/api/comments/${postId}`,
                 headers: {
                     authorization: `Bearer ${localStorage.getItem("token")}`
                 },
-                data: {},
-                success: function (response) {
-                    $(`#commentBody${commentId}`).hide()
-                },
-                error: function (error) {
-                    console.error(error.responseJSON.errorMessage);
-                    alert(error.responseJSON.errorMessage)
-                },
-            });
+                data: {comId : comId},
+                success: function(response) {
+                    if (response['errorMessage']) {
+                        alert(response['errorMessage']);
+              }
+              window.location.reload();
+            }
+          })
         }
-
-    }
+      }
 
     // 댓글을 UI에 그려주는 함수
-    function makeComment(commentObject, tokenUserId) {
-        const {commentId, nickname, comment, userId} = commentObject;
-        // 접속한 userId와 댓글 userId가 같을 경우
-        if (userId == tokenUserId) {
-            const temp_html = `
-            <tr id="commentBody${commentId}">
-                <td scope="col">${nickname}</td>
-                <td scope="col" id="comment${commentId}">${comment}
-                </td>
-                <td id="commentIcon${commentId}">
-                    <i class="fa fa-pencil" aria-hidden="true" onclick="modifyCommentShow(${commentId})"></i>
-                    <i class="fa fa-times" aria-hidden="true" onclick="deleteComment(${commentId})"></i>
-                </td>
+    // function makeComment(commentObject, tokenUserId) {
+    //     const {commentId, nickname, comment, userId} = commentObject;
+    //     // 접속한 userId와 댓글 userId가 같을 경우
+    //     if (userId == tokenUserId) {
+    //         const temp_html = `
+    //         <tr id="commentBody${commentId}">
+    //             <td scope="col">${nickname}</td>
+    //             <td scope="col" id="comment${commentId}">${comment}
+    //             </td>
+    //             <td id="commentIcon${commentId}">
+    //                 <i class="fa fa-pencil" aria-hidden="true" onclick="modifyCommentShow(${commentId})"></i>
+    //                 <i class="fa fa-times" aria-hidden="true" onclick="deleteComment(${commentId})"></i>
+    //             </td>
 
-                <td colspan="2">
-                <div id="commentDiv${commentId}" class="input-group mb-3" style="display: none">
-                  <input id="commentInput${commentId}" type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                  <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" onclick="modifyComment(${commentId})">저장</button>
-                  </div>
-                </div>
-                </td>
-            </tr>`
-            $('#commentTableBody').append(temp_html)
+    //             <td colspan="2">
+    //             <div id="commentDiv${commentId}" class="input-group mb-3" style="display: none">
+    //               <input id="commentInput${commentId}" type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">
+    //               <div class="input-group-append">
+    //                 <button class="btn btn-outline-secondary" type="button" onclick="modifyComment(${commentId})">저장</button>
+    //               </div>
+    //             </div>
+    //             </td>
+    //         </tr>`
+    //         $('#commentTableBody').append(temp_html)
 
-        } else { // 접속한 userId와 댓글 userId가 다를 경우
-            const temp_html = `<tr>
-                <td scope="col">${nickname}</td>
-                <td scope="col">${comment}</td>
-                <td></td>
-            </tr>`
-            $('#commentTableBody').append(temp_html)
-        }
-    }
+    //     } else { // 접속한 userId와 댓글 userId가 다를 경우
+    //         const temp_html = `<tr>
+    //             <td scope="col">${nickname}</td>
+    //             <td scope="col">${comment}</td>
+    //             <td></td>
+    //         </tr>`
+    //         $('#commentTableBody').append(temp_html)
+    //     }
+    // }
 
     // 댓글 작성
+    
     function writeComment() {
         const comment = $('#comment').val()
         const postId = location.pathname.split("/")[3]
@@ -300,8 +332,10 @@
 <body>
 
 <div>
+  
     <div class="content-box">
-        <h3>제목 :  <%= data.title %> </h3>
+      <h1 style="display: none;">Post no <%= postId %> </h1>
+      <h3>제목 :  <%= data.title %> </h3>
         <div class="content-info">
             <h6>작성일 :  <%= data.date.split('GMT',1) %> </h6>
             <h6>작성자 : <%= data.name %></h6>
@@ -330,4 +364,5 @@
 
 
 
-</div></body></html>
+</div></body>
+</html>

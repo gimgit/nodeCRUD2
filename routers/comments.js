@@ -5,7 +5,6 @@ const jwt = require('JsonWebToken')
 const authMiddleware = require('../middlewares/auth_middleware.js');
 
 router.post("/comments/:postId", authMiddleware, async(req, res) => {
-    console.log('here')
     const comment = req.body.comment;
     // const date = new Date(req.body.date);
     const name = res.locals.user.nickname;
@@ -28,19 +27,39 @@ router.get("/comments/:postId", async (req, res, next) => {
     res.json({ comments: comment });
 });
 
-// router.get("/comments/:postId", )
+router.get("/comments/comment/:comId", authMiddleware, async(req, res, next) => {
+    const comId = req.params;
+    console.log(req.headers)
 
+    // const comId = req.params;
+    // const comments = await comments.findOne({ postId: postId });
+    const comment = await comments.findOne({ comId : comId });
 
-// router.get('/posts/:title/comment', authMiddleware, async (req, res) => {
-//     const { title } = req.params;
-//     const comment = await Comment.find({ title }).sort('-date').exec();
-//     if (res.locals.user !== null) {
-//       const { nickname } = res.locals.user;
-//       res.send({ comment: comment, nickname: nickname });
-//       return;
-//     }
-//     res.send({ comment: comment });
-//   });
+    if (comment.name != res.locals.user.nickname) {
+        res.send ({ errorMessage: "access denied" });
 
-  
+        return;
+    }
+    res.json({ comments: comment });
+});
+
+router.delete("/comments/:postId", authMiddleware, async (req, res, next) => {
+    const { postId } = req.params;
+    const { comId } = req.body;
+    console.log(comId)
+    console.log(postId)
+
+    const isCommentInComments = await comments.findOne({ comId: comId });
+
+    // 댓글 작성자가 맞다면
+    if (res.locals.user.nickname != isCommentInComments.name) {
+        res.send({ errorMessage: "Access denied" });
+
+        return
+    } else { await comments.deleteOne({ comId: comId });
+    }
+
+    res.send({ })
+});  
+
 module.exports = router;
