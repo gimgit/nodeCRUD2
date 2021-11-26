@@ -50,12 +50,7 @@ router.get("/findComment/:comId", authMiddleware, async(req, res, next) => {
 
 router.delete("/comments/:comId", authMiddleware, async (req, res, next) => {
     
-    // const { com } = req.params;
     const { comId }= req.params;
-
-    console.log('touch')
-    console.log(req.body)
-    console.log(comId)
 
     const isCommentInComments = await comments.findOne({ comId: comId });
     console.log(isCommentInComments)
@@ -70,5 +65,19 @@ router.delete("/comments/:comId", authMiddleware, async (req, res, next) => {
 
     res.send({ })
 });  
+
+router.patch("/patchComment/:comId", authMiddleware, async (req, res, next) => {
+    const { comId }= req.params;
+    const { comment } = req.body;
+
+
+    const isCommentInComments = await comments.findOne({ _id: comId });
+
+    if (isCommentInComments) {
+        await comments.updateOne({ _id: comId }, {$set: {comment}});
+    }
+
+    res.send({ })
+})
 
 module.exports = router;
