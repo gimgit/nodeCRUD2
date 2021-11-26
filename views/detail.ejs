@@ -128,9 +128,15 @@
         if (user1 == localStorage.getItem('nickname')) {
           temp_html = `
             <li>
-              ${name} 님이 "${com}"
-              <button onclick="findComment('${comId}')">modify!</button>
+              <div id="commentHide${comId}" style="display: inline-block;" >${name} 님이 "${com}"</div>
+              <div id="commentShow${comId}" style="display: none; inline-block;" >
+                ${name} 님이 <input type="text" value="${com}">
+                <button onclick="('${comId}')">수정</button>
+              </div>
+              <div id="buttons${comId}" style="display: inline-block;">
+              <button id="comment('${comId}')" onclick="findComment('${comId}')">modify!</button>             
               <button onclick="deleteComment('${comId}')">delete</button>
+              </div>
             </li>`;
         } else {
           temp_html = `
@@ -139,29 +145,12 @@
             </li>`;
         }
 
-        // <button onclick="deleteComment('${comId}')">delete</button>
-        // <button onclick="getComment('${comId}')">modify</button>
-
-
-    //댓글수정 숨기기?
-    // function modifyCommentShow(commentId) {
-    //     $(`#comment${commentId}`).hide()
-    //     $(`#commentIcon${commentId}`).hide()
-
-    //     $(`#commentDiv${commentId}`).show()
-
-    //     const commentText = $(`#comment${commentId}`).text().trim();
-    //     $(`#commentInput${commentId}`).val(commentText)
-    // }
-
-    function modifyCommentHide(commentId) {
-        $(`#comment${commentId}`).show()
-        $(`#commentIcon${commentId}`).show()
-
-        $(`#commentDiv${commentId}`).hide()
-    }
-    $('#comments').append(temp_html);
+        $('#comments').append(temp_html);
       }
+
+
+
+    
 
       //댓글 특정
       function findComment(comId) {
@@ -178,10 +167,27 @@
               alert(response['errorMessage']);
               return;
             }
+
+            // $(`#comment${comId}`).hide()
+            // $(`#commentIcon${comId}`).hide()
+
+            // $(`#commentDiv${comId}`).show()
+
+            // const commentText = $(`#comment${comId}`).text().trim();
+            // $(`#commentInput${comId}`).val(commentText)
+            // console.log('특정성공')
+            // }
+
             const comment = response['comments'];
-            $('#commentinput').val(comment['comment']);
-            $('#submitbtn').hide();
-            $('#commentmodifybtn').show();
+            console.log(comment)
+            // $('#comment').val(comment['comment']);
+
+            $(`#commentHide${comId}`).hide();
+            $(`#commentShow${comId}`).show();
+            $(`#buttons${comId}`).hide();
+            // $(`#comment${comId}`).val(comment['comment']);
+            // // $('#submitbtn').hide();
+            // $('#commentmodifybtn').show();
             $('#commentid_p').text(comId);
             console.log('특정성공')
           }
@@ -302,12 +308,6 @@
     }
 
 
-
-    function modifyPost() {
-        const postId = location.pathname.split("/")[2]
-        location.href = `/modify/${postId}`
-    }
-
     function getSelf(callback) {
     $.ajax({
         type: "GET",
@@ -335,7 +335,7 @@
 <body>
 
 <div>
-  
+    <div id="commentHide(1)" style="display: inline-block;">dafssd</div>
     <div class="content-box">
       <h1 style="display: none;">Detail with post no <%= data.postId %> </h1>
       <h3>제목 :  <%= data.title %> </h3>
@@ -344,8 +344,7 @@
             <h6>작성자 : <%= data.name %></h6>
 
             <button type="button" onclick="location.href='/'">뒤로</button>
-            <button type="button" onclick="location.href='/contents/edit/<%= data._id%>' ">수정</button>
-    
+            
         </div>
       <hr>
        <p>본문 : <%= data.content %></p>   
@@ -353,8 +352,16 @@
     <hr>
     <div>
 
-    <p id="commentid_p" style="display: none;"></p>
-    <ul id="comments">
+      
+      <!-- <div id="commentDiv50" class="input-group mb-3" style="">
+        <input id="commentInput50" type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" onclick="modifyComment('${comId}')">저장</button>
+        </div>
+      </div> -->
+
+    <!-- <p id="commentid_p" style="display: none;"></p> -->
+    <div id="comments">
     </div>
       <div id="makecomment">
         <div onclick="loginCheck()"><input type="text" id="commentinput" > </div>
@@ -362,6 +369,7 @@
         <button id="submitbtn" onclick="writeComment()">Submit</button>
         <button id="commentmodifybtn" onclick="modify_comment()">Modify</button>
       </div>
+
       
     <!-- <div>
         <div class="input-group mb-3" id="commentWriteBody">
