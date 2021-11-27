@@ -28,7 +28,7 @@
         
         $.ajax({
             type: "POST",
-            url: "/api/signUp",
+            url: "/users/signUp",
             data: {nickname, pw1, pw2},
             success: function (response) {
                 location.href = "/login"
@@ -44,6 +44,30 @@
           window.location.replace("/");
         });
       }
+
+    // function signEvent() {
+    //     const nickname = $('#nickname').val();
+    //     const pw1 = $('#pw1').val();
+    //     const pw2 = $('#pw2').val();
+        
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/api/signUp",
+    //         data: {nickname, pw1, pw2},
+    //         success: function (response) {
+    //             location.href = "/login"
+    //         },
+    //         error: function (error) {
+    //             alert(error.responseJSON.errorMessage);
+    //         },
+    //     });
+    // }
+    // if (localStorage.getItem("token")) {
+    //     getSelf(function () {
+    //       alert("이미 로그인이 되어있습니다.");
+    //       window.location.replace("/");
+    //     });
+    //   }
 
     function getSelf(callback) {
     $.ajax({

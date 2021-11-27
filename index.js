@@ -10,7 +10,7 @@ const posts = require('./routers/posts')
 // const connect = require('./schemas')
 // connect();
 
-mongoose.connect('mongodb://localhost:27017/CRUD', {
+mongoose.connect('mongodb://test:test@54.180.107.194:27017/admin', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
