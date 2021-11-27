@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth_middleware.js');
 const Posts = require("../schemas/post");
 
@@ -24,22 +25,15 @@ router.post('/posts', authMiddleware, async(req, res) => {
 
 router.get("/posts", async (req, res, next) => {
     try {
-        const posts = await Posts.find({ }).sort("-postId");  // find from query. sort as goodsId
+        const posts = await Posts.find({ }).sort("-postId");  
     
-        res.json({ posts: posts });  // jsonify
-        // console.log(posts)
+        res.json({ posts: posts });  
     } catch (err) {
         console.error(err);
     
         next(err);
     }
   });
-
-//  router.get('/posts/:id', function(req, res){
-//     post.findOne({_id : parseInt(req.params.id)}, function(err, result){
-//     res.render('detail.ejs', { data : result});  
-//   })
-// })
 
 
   router.get("/posts/:postId", async (req, res) => {

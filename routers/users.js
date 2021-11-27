@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const User = require("../schemas/user")
-const jwt = require('JsonWebToken')
+const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/auth_middleware.js');
 
 
 //회원가입
 router.post("/signUp", async (req, res, next)=>{
-    const nickname = req.body.nickname
-    const pw1 = req.body.pw1
-    const pw2 = req.body.pw2
-    const namingRule = /^[a-zA-z0-9]{3,999}$/
-    const existingUser = await User.findOne({nickname : nickname});
+  const nickname = req.body.nickname
+  const pw1 = req.body.pw1
+  const pw2 = req.body.pw2
+  const namingRule = /^[a-zA-z0-9]{3,999}$/
+  const existingUser = await User.findOne({nickname : nickname});
   
     // 패스워드 양식 확인
     if (pw1.length < 4 || pw1.includes(nickname) == true){

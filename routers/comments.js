@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const comments = require("../schemas/comments");
-const jwt = require('JsonWebToken');
+const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth_middleware.js');
-const authMiddleware2 = require('../middlewares/auth_middleware2.js');
 
 router.post("/comments/:postId", authMiddleware, async(req, res) => {
     const comment = req.body.comment;

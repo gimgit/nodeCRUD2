@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 5000
+const port = 3000
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 
@@ -24,7 +24,7 @@ app.use('/api', users)
 app.use('/api', posts)
 app.use('/api', comments)
 
-// ejs 
+// ejs
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
