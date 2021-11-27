@@ -31,13 +31,7 @@ router.get("/comments/:postId", async (req, res, next) => {
 router.get("/findComment/:comId", authMiddleware, async(req, res, next) => {
     
     const { comId } = req.params;
-    
-    // console.log(req.headers)
-    console.log('params')
-    console.log(comId)
 
-    // const comId = req.params;
-    // const comments = await comments.findOne({ postId: postId });
     const comment = await comments.findOne({ _id : comId });
 
     if (comment.name != res.locals.user.nickname) {
