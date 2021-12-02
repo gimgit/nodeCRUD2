@@ -8,6 +8,28 @@ const CommentSchema = new mongoose.Schema({
   comment: String,
   date: String,
   user: String
+  // postId: {
+  //   type: Number,
+  //   required: true,
+  //   unique: true,
+  // },  
+  // name: {
+  //   type: String,
+  //   required: true,
+  // },
+  // title: {
+  //     type: String,
+  // },
+  // comment: {
+  //     type: String,
+  //     required: true
+  // },
+  // date: {
+  //     type: String,
+  //   },
+  // user: {
+  //   type: String,
+  // },
 });
 CommentSchema.virtual('comId').get(function () {
   return this._id.toHexString();

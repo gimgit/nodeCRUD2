@@ -43,19 +43,33 @@ router.get("/findComment/:comId", authMiddleware, async(req, res, next) => {
 
 router.delete("/comments/:comId", authMiddleware, async (req, res, next) => {
     
-    const { comId }= req.params;
+    // // const { comId }= req.params;
 
-    const isCommentInComments = await comments.findOne({ comId: comId });
-    console.log(isCommentInComments)
+    // // const isCommentInComments = await comments.findOne({ _id: comId });
 
-    // 댓글 작성자가 맞다면
-    if (res.locals.user.nickname != isCommentInComments.name) {
-        res.send({ errorMessage: "Access denied" });
 
-        return
-    } else { await comments.deleteOne({ _id: comId });
+    // console.log(isCommentInComments.name)
+    // console.log(res.locals.user.nickname)
+    // console.log(comId)
+
+
+    // // 댓글 작성자가 맞다면
+    // if (isCommentInComments.name !== res.locals.user.nickname ) {
+    //     res.send({ errorMessage: "Access denied" });
+    //     return
+    // } else { await comments.deleteOne({ _id: comId });
+    // }
+
+    const { comId } = req.params;
+
+    const comment = await comments.findOne({ _id : comId });
+
+    if (comment.name !== res.locals.user.nickname) {
+        res.send ({ errorMessage: "access denied" });
+
+        return;
+    }else { await comments.deleteOne({ _id: comId });
     }
-
     res.send({ })
 });  
 

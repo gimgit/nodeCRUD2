@@ -28,7 +28,7 @@
         
         $.ajax({
             type: "POST",
-            url: "/users/signUp",
+            url: "/api/signUp",
             data: {nickname, pw1, pw2},
             success: function (response) {
                 location.href = "/login"

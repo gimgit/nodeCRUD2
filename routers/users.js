@@ -12,21 +12,6 @@ router.post("/signUp", async (req, res, next)=>{
   const pw2 = req.body.pw2
   const namingRule = /^[a-zA-z0-9]{3,999}$/
   const existingUser = await User.findOne({nickname : nickname});
-  
-    // 패스워드 양식 확인
-    if (pw1.length < 4 || pw1.includes(nickname) == true){
-      res.status(400).send({
-        errorMessage: "패스워드는 4자이상, 닉네임을 포함하지 않음"
-      })
-      return;
-    }
-    // 패스워드 일치 확인
-    if (pw1 !== pw2) {
-      res.status(400).send({
-        errorMessage: "패스워드가 패스워드 확인란과 다릅니다.",
-      });
-      return;
-    }
     // 닉네임 양식 확인
     if (nickname < 3 || namingRule.test(nickname) == false){
       res.status(400).send({
@@ -41,6 +26,21 @@ router.post("/signUp", async (req, res, next)=>{
       })
       return;
     }
+    // 패스워드 양식 확인
+    if (pw1.length < 4 || pw1.includes(nickname) == true){
+      res.status(400).send({
+        errorMessage: "패스워드는 4자이상, 닉네임을 포함하지 않음"
+      })
+      return;
+    }
+    // 패스워드 일치 확인
+    if (pw1 !== pw2) {
+      res.status(400).send({
+        errorMessage: "패스워드가 패스워드 확인란과 다릅니다.",
+      });
+      return;
+    }
+    
 
       const user = new User({ 
       nickname : nickname, 

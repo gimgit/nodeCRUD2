@@ -193,7 +193,7 @@
     //댓글 수정
     function modifyComment(comId) {
         const comment = $(`#modifyInput${comId}`).val()
-        console.log(comment)
+        console.log(comment + '2')
         if (!comment) {
             alert("댓글 내용이 존재하지 않습니다.")
             return;
@@ -224,7 +224,7 @@
                 type: "DELETE",
                 url: `/api/comments/${comId}`,
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`
+                    authorization: `Bearer ${localStorage.getItem('token')}`
                 },
                 data: {},
                 success: function(response) {
